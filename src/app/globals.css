@@ -123,6 +123,7 @@
 
 /* React MD Editor styles */
 .w-md-editor {
+  --md-editor-background-color: #fff;
   background-color: var(--background);
 }
 

@@ -197,6 +197,7 @@ export default function WikiEditor({
                   value={content}
                   onChange={(val) => setContent(val || "")}
                   preview="edit"
+                  height={400}
                   hideToolbar={false}
                   visibleDragbar={false}
                   textareaProps={{
@@ -213,7 +214,7 @@ export default function WikiEditor({
         </Card>
 
         {/* File Upload Section */}
-        <Card>
+        <Card className="overflow-hidden">
           <CardHeader>
             <CardTitle>Attachments</CardTitle>
           </CardHeader>
@@ -233,7 +234,7 @@ export default function WikiEditor({
                     article
                   </p>
                 </div>
-                <Input
+                <input
                   id="file-upload"
                   type="file"
                   multiple
@@ -252,11 +253,11 @@ export default function WikiEditor({
                         key={index}
                         className="flex items-center justify-between p-2 bg-muted rounded-md"
                       >
-                        <div className="flex items-center space-x-2">
-                          <span className="text-sm font-medium">
+                        <div className="flex items-center space-x-2 min-w-0 flex-1">
+                          <span className="text-sm font-medium truncate">
                             {file.name}
                           </span>
-                          <span className="text-xs text-muted-foreground">
+                          <span className="text-xs text-muted-foreground shrink-0">
                             ({(file.size / 1024).toFixed(1)} KB)
                           </span>
                         </div>

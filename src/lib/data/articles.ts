@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { usersSync } from "drizzle-orm/neon";
 import redis from "@/cache";
 import db from "@/db/index";
@@ -27,7 +27,8 @@ export async function getArticles() {
       author: usersSync.name,
     })
     .from(articles)
-    .leftJoin(usersSync, eq(articles.authorId, usersSync.id));
+    .leftJoin(usersSync, eq(articles.authorId, usersSync.id))
+    .orderBy(desc(articles.updatedAt));
 
   redis.set("articles:all", response, {
     ex: 60,
