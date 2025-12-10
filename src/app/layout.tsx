@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Manrope, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { NavBar } from "@/components/nav/nav-bar";
 
-const inter = Inter({
+const manrope = Manrope({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
@@ -26,7 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}
+        className={`${manrope.variable} ${jetbrainsMono.variable} antialiased`}
       >
         <NavBar />
         {children}
