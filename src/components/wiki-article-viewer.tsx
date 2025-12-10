@@ -4,6 +4,7 @@ import {
   Calendar,
   ChevronRight,
   Edit,
+  Eye,
   Home,
   Loader2,
   Trash,
@@ -11,9 +12,11 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { useFormStatus } from "react-dom";
 import ReactMarkdown from "react-markdown";
 import { deleteArticleForm } from "@/app/actions/articles";
+import { incrementPageview } from "@/app/actions/pageviews";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -95,6 +98,16 @@ export default function WikiArticleViewer({
   article,
   canEdit = false,
 }: WikiArticleViewerProps) {
+  const [localPageviews, setLocalPageviews] = useState<number | null>(null);
+
+  useEffect(() => {
+    async function fetchPageview() {
+      const newCount = await incrementPageview(article.id);
+      setLocalPageviews(newCount ?? null);
+    }
+    fetchPageview();
+  }, [article.id]);
+
   // Format date for display
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -139,6 +152,11 @@ export default function WikiArticleViewer({
             </div>
             <div className="flex items-center">
               <Badge variant="secondary">Article</Badge>
+            </div>
+            <div className="flex items-center text-sm text-muted-foreground">
+              <Eye className="h-4 w-4 mr-1" />
+              <span>{localPageviews ? localPageviews : "—"}</span>
+              <span className="ml-1">views</span>
             </div>
           </div>
         </div>

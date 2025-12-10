@@ -1,9 +1,23 @@
 import { eq } from "drizzle-orm";
 import { usersSync } from "drizzle-orm/neon";
+import redis from "@/cache";
 import db from "@/db/index";
 import { articles } from "@/db/schema";
 
+type ArticleListItem = {
+  title: string;
+  id: number;
+  createdAt: string;
+  content: string;
+  author: string | null;
+};
+
 export async function getArticles() {
+  const cached = await redis.get<ArticleListItem[]>("articles:all");
+  if (cached) {
+    return cached;
+  }
+
   const response = await db
     .select({
       title: articles.title,
@@ -14,6 +28,11 @@ export async function getArticles() {
     })
     .from(articles)
     .leftJoin(usersSync, eq(articles.authorId, usersSync.id));
+
+  redis.set("articles:all", response, {
+    ex: 60,
+  });
+
   return response;
 }
 

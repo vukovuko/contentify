@@ -2,6 +2,7 @@
 
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
+import redis from "@/cache";
 import { authorizeUserToEditArticle } from "@/db/authz";
 import db from "@/db/index";
 import {
@@ -33,6 +34,8 @@ export async function createArticle(input: CreateArticleInput) {
     })
     .returning({ id: articles.id });
 
+  redis.del("articles:all");
+
   return { success: true, id: result?.id };
 }
 
@@ -58,6 +61,8 @@ export async function updateArticle(id: string, input: UpdateArticleInput) {
     })
     .where(eq(articles.id, +id));
 
+  redis.del("articles:all");
+
   return { success: true };
 }
 
@@ -72,6 +77,8 @@ export async function deleteArticle(id: string) {
   }
 
   await db.delete(articles).where(eq(articles.id, +id));
+
+  redis.del("articles:all");
 
   return { success: true };
 }
