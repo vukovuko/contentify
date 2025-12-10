@@ -3,7 +3,7 @@ import { StackProvider, StackTheme } from "@stackframe/stack";
 import { stackClientApp } from "../stack/client";
 import { Manrope, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import { NavBar } from "@/components/nav/nav-bar";
+import NavBar from "@/components/nav/nav-bar";
 
 const manrope = Manrope({
   variable: "--font-geist-sans",
@@ -29,10 +29,14 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={`${manrope.variable} ${jetbrainsMono.variable} antialiased`}
-      ><StackProvider app={stackClientApp}><StackTheme>
-        <NavBar />
-        {children}
-      </StackTheme></StackProvider></body>
+      >
+        <StackProvider app={stackClientApp}>
+          <StackTheme>
+            <NavBar />
+            {children}
+          </StackTheme>
+        </StackProvider>
+      </body>
     </html>
   );
 }
