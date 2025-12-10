@@ -4,31 +4,22 @@ import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { authorizeUserToEditArticle } from "@/db/authz";
 import db from "@/db/index";
-import { articles } from "@/db/schema";
+import {
+  articles,
+  type CreateArticleInput,
+  createArticleSchema,
+  type UpdateArticleInput,
+  updateArticleSchema,
+} from "@/db/schema";
 import { stackServerApp } from "@/stack/server";
 
-// Server actions for articles (stubs)
-// TODO: Replace with real database operations when ready
-
-export type CreateArticleInput = {
-  title: string;
-  content: string;
-  authorId: string;
-  imageUrl?: string;
-};
-
-export type UpdateArticleInput = {
-  title?: string;
-  content?: string;
-  imageUrl?: string;
-};
-
-export async function createArticle(data: CreateArticleInput) {
+export async function createArticle(input: CreateArticleInput) {
   const user = await stackServerApp.getUser();
   if (!user) {
     throw new Error("❌ Unauthorized");
   }
-  console.log("✨ createArticle called:", data);
+
+  const data = createArticleSchema.parse(input);
 
   const response = await db
     .insert(articles)
@@ -45,7 +36,7 @@ export async function createArticle(data: CreateArticleInput) {
   return { success: true, message: "Article create logged", id: articleId };
 }
 
-export async function updateArticle(id: string, data: UpdateArticleInput) {
+export async function updateArticle(id: string, input: UpdateArticleInput) {
   const user = await stackServerApp.getUser();
   if (!user) {
     throw new Error("❌ Unauthorized");
@@ -55,9 +46,9 @@ export async function updateArticle(id: string, data: UpdateArticleInput) {
     throw new Error("❌ Forbidden");
   }
 
-  console.log("📝 updateArticle called:", { id, ...data });
+  const data = updateArticleSchema.parse(input);
 
-  const _response = await db
+  await db
     .update(articles)
     .set({
       title: data.title,
@@ -78,11 +69,9 @@ export async function deleteArticle(id: string) {
     throw new Error("❌ Forbidden");
   }
 
-  console.log("🗑️ deleteArticle called:", id);
+  await db.delete(articles).where(eq(articles.id, +id));
 
-  const _response = await db.delete(articles).where(eq(articles.id, +id));
-
-  return { success: true, message: `Article ${id} delete logged (stub)` };
+  return { success: true, message: `Article ${id} deleted` };
 }
 
 // Form-friendly server action: accepts FormData from a client form and calls deleteArticle

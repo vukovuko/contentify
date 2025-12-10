@@ -3,12 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactCompiler: true,
   images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "cdn.shadcnstudio.com",
-      },
-    ],
+    remotePatterns: [new URL("https://cdn.shadcnstudio.com/**")],
   },
 };
 
