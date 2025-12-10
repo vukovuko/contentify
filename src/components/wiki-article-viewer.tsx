@@ -14,6 +14,16 @@ import Link from "next/link";
 import { useFormStatus } from "react-dom";
 import ReactMarkdown from "react-markdown";
 import { deleteArticleForm } from "@/app/actions/articles";
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -34,6 +44,35 @@ function DeleteButton() {
       )}
       {pending ? "Deleting..." : "Delete"}
     </Button>
+  );
+}
+
+function DeleteWithConfirmation({ articleId }: { articleId: number }) {
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button variant="destructive" className="cursor-pointer">
+          <Trash className="h-4 w-4 mr-2" />
+          Delete
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This action cannot be undone. This will permanently delete the
+            article.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <form action={deleteArticleForm}>
+            <input type="hidden" name="id" value={String(articleId)} />
+            <DeleteButton />
+          </form>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }
 
@@ -114,11 +153,8 @@ export default function WikiArticleViewer({
               </Button>
             </Link>
 
-            {/* Delete form calls the server action wrapper */}
-            <form action={deleteArticleForm} className="ml-2">
-              <input type="hidden" name="id" value={String(article.id)} />
-              <DeleteButton />
-            </form>
+            {/* Delete with confirmation dialog */}
+            <DeleteWithConfirmation articleId={article.id} />
           </div>
         )}
       </div>
@@ -251,10 +287,7 @@ export default function WikiArticleViewer({
               </Button>
             </Link>
 
-            <form action={deleteArticleForm}>
-              <input type="hidden" name="id" value={String(article.id)} />
-              <DeleteButton />
-            </form>
+            <DeleteWithConfirmation articleId={article.id} />
           </div>
         )}
       </div>

@@ -16,34 +16,34 @@ import { stackServerApp } from "@/stack/server";
 export async function createArticle(input: CreateArticleInput) {
   const user = await stackServerApp.getUser();
   if (!user) {
-    throw new Error("❌ Unauthorized");
+    throw new Error("Unauthorized");
   }
 
   const data = createArticleSchema.parse(input);
 
-  const response = await db
+  const [result] = await db
     .insert(articles)
     .values({
       title: data.title,
       content: data.content,
+      imageUrl: data.imageUrl,
       slug: `${Date.now()}`,
       published: true,
       authorId: user.id,
     })
     .returning({ id: articles.id });
 
-  const articleId = response[0]?.id;
-  return { success: true, message: "Article create logged", id: articleId };
+  return { success: true, id: result?.id };
 }
 
 export async function updateArticle(id: string, input: UpdateArticleInput) {
   const user = await stackServerApp.getUser();
   if (!user) {
-    throw new Error("❌ Unauthorized");
+    throw new Error("Unauthorized");
   }
 
   if (!(await authorizeUserToEditArticle(user.id, +id))) {
-    throw new Error("❌ Forbidden");
+    throw new Error("Forbidden");
   }
 
   const data = updateArticleSchema.parse(input);
@@ -53,28 +53,29 @@ export async function updateArticle(id: string, input: UpdateArticleInput) {
     .set({
       title: data.title,
       content: data.content,
+      imageUrl: data.imageUrl || undefined,
+      updatedAt: new Date().toISOString(),
     })
     .where(eq(articles.id, +id));
 
-  return { success: true, message: `Article ${id} update logged` };
+  return { success: true };
 }
 
 export async function deleteArticle(id: string) {
   const user = await stackServerApp.getUser();
   if (!user) {
-    throw new Error("❌ Unauthorized");
+    throw new Error("Unauthorized");
   }
 
   if (!(await authorizeUserToEditArticle(user.id, +id))) {
-    throw new Error("❌ Forbidden");
+    throw new Error("Forbidden");
   }
 
   await db.delete(articles).where(eq(articles.id, +id));
 
-  return { success: true, message: `Article ${id} deleted` };
+  return { success: true };
 }
 
-// Form-friendly server action: accepts FormData from a client form and calls deleteArticle
 export async function deleteArticleForm(formData: FormData): Promise<void> {
   const id = formData.get("id");
   if (!id) {
@@ -82,6 +83,5 @@ export async function deleteArticleForm(formData: FormData): Promise<void> {
   }
 
   await deleteArticle(String(id));
-  // After deleting, redirect the user back to the homepage.
   redirect("/");
 }

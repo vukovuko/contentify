@@ -2,6 +2,10 @@
 
 import { Upload, X } from "lucide-react";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { createArticle, updateArticle } from "@/app/actions/articles";
+import { uploadFile } from "@/app/actions/upload";
 
 const MDEditor = dynamic(() => import("@uiw/react-md-editor"), {
   ssr: false,
@@ -12,6 +16,17 @@ const MDEditor = dynamic(() => import("@uiw/react-md-editor"), {
 
 import type React from "react";
 import { useState } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -22,12 +37,6 @@ interface WikiEditorProps {
   initialContent?: string;
   isEditing?: boolean;
   articleId?: string;
-}
-
-interface FormData {
-  title: string;
-  content: string;
-  files: File[];
 }
 
 interface FormErrors {
@@ -41,6 +50,7 @@ export default function WikiEditor({
   isEditing = false,
   articleId,
 }: WikiEditorProps) {
+  const router = useRouter();
   const [title, setTitle] = useState(initialTitle);
   const [content, setContent] = useState(initialContent);
   const [files, setFiles] = useState<File[]>([]);
@@ -87,41 +97,49 @@ export default function WikiEditor({
 
     setIsSubmitting(true);
 
-    const formData: FormData = {
-      title: title.trim(),
-      content: content.trim(),
-      files,
-    };
+    try {
+      let imageUrl: string | undefined;
 
-    // Log the form data (as requested - no actual API calls)
-    console.log("Form submitted:", {
-      action: isEditing ? "edit" : "create",
-      articleId: isEditing ? articleId : undefined,
-      data: formData,
-    });
+      // Upload file if one is selected
+      if (files.length > 0) {
+        const fd = new FormData();
+        fd.append("files", files[0]);
+        const uploaded = await uploadFile(fd);
+        imageUrl = uploaded?.url;
+      }
 
-    // Simulate API call delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    setIsSubmitting(false);
-
-    // In a real app, you would navigate after successful submission
-    alert(
-      `Article ${
-        isEditing ? "updated" : "created"
-      } successfully! Check console for form data.`,
-    );
-  };
-
-  // Handle cancel
-  const handleCancel = () => {
-    // In a real app, you would navigate back
-    const shouldLeave = window.confirm(
-      "Are you sure you want to cancel? Any unsaved changes will be lost.",
-    );
-    if (shouldLeave) {
-      console.log("User cancelled editing");
-      // navigation logic would go here
+      if (isEditing && articleId) {
+        await updateArticle(articleId, {
+          title: title.trim(),
+          content: content.trim(),
+          imageUrl,
+        });
+        toast.success("Article Updated", {
+          description: "Your article has been updated successfully.",
+        });
+        router.push(`/wiki/${articleId}`);
+      } else {
+        const result = await createArticle({
+          title: title.trim(),
+          content: content.trim(),
+          imageUrl,
+        });
+        toast.success("Article Created", {
+          description: "Your article has been created successfully.",
+        });
+        if (result.id) {
+          router.push(`/wiki/${result.id}`);
+        } else {
+          router.push("/");
+        }
+      }
+    } catch (error) {
+      toast.error("Error", {
+        description:
+          error instanceof Error ? error.message : "Something went wrong",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -201,15 +219,15 @@ export default function WikiEditor({
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center">
+              <Label
+                htmlFor="file-upload"
+                className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center block cursor-pointer hover:border-muted-foreground/50 transition-colors"
+              >
                 <Upload className="mx-auto h-12 w-12 text-muted-foreground/50 mb-4" />
                 <div className="space-y-2">
-                  <Label
-                    htmlFor="file-upload"
-                    className="cursor-pointer text-sm font-medium"
-                  >
+                  <span className="text-sm font-medium">
                     Click to upload files
-                  </Label>
+                  </span>
                   <p className="text-xs text-muted-foreground">
                     Upload images, documents, or other files to attach to your
                     article
@@ -222,7 +240,7 @@ export default function WikiEditor({
                   onChange={handleFileUpload}
                   className="sr-only"
                 />
-              </div>
+              </Label>
 
               {/* Display uploaded files */}
               {files.length > 0 && (
@@ -264,14 +282,37 @@ export default function WikiEditor({
         <Card>
           <CardContent className="pt-6">
             <div className="flex justify-end space-x-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleCancel}
-                disabled={isSubmitting}
-              >
-                Cancel
-              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={isSubmitting}
+                  >
+                    Cancel
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Discard changes?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Are you sure you want to cancel? Any unsaved changes will
+                      be lost.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Keep editing</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() => {
+                        // Navigation logic would go here
+                        window.history.back();
+                      }}
+                    >
+                      Discard
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
               <Button
                 type="submit"
                 disabled={isSubmitting}

@@ -4,6 +4,7 @@ import { JetBrains_Mono, Manrope } from "next/font/google";
 import { stackClientApp } from "../stack/client";
 import "./globals.css";
 import NavBar from "@/components/nav/nav-bar";
+import { Toaster } from "@/components/ui/sonner";
 
 const manrope = Manrope({
   variable: "--font-geist-sans",
@@ -34,6 +35,7 @@ export default function RootLayout({
           <StackTheme>
             <NavBar />
             {children}
+            <Toaster />
           </StackTheme>
         </StackProvider>
       </body>

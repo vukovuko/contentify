@@ -123,29 +123,34 @@
 
 /* React MD Editor styles */
 .w-md-editor {
-  background-color: hsl(var(--background));
+  background-color: var(--background) !important;
 }
 
 .w-md-editor-text-textarea,
 .w-md-editor-text {
-  color: hsl(var(--foreground));
-  background-color: hsl(var(--background));
+  color: var(--foreground) !important;
+  background-color: var(--background) !important;
+}
+
+.w-md-editor-text-pre > code,
+.w-md-editor-text-input {
+  color: var(--foreground) !important;
 }
 
 .w-md-editor.w-md-editor-focus {
-  border-color: hsl(var(--ring));
+  border-color: var(--ring) !important;
 }
 
-.w-md-editor-bar {
-  background-color: hsl(var(--muted));
-  border-bottom: 1px solid hsl(var(--border));
+.w-md-editor-toolbar {
+  background-color: var(--muted) !important;
+  border-bottom: 1px solid var(--border) !important;
 }
 
-.w-md-editor-bar svg {
-  color: hsl(var(--muted-foreground));
+.w-md-editor-toolbar svg {
+  color: var(--muted-foreground) !important;
 }
 
-.w-md-editor-bar button:hover {
-  background-color: hsl(var(--accent));
-  color: hsl(var(--accent-foreground));
+.w-md-editor-toolbar button:hover {
+  background-color: var(--accent) !important;
+  color: var(--accent-foreground) !important;
 }
