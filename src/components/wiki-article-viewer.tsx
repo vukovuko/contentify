@@ -1,13 +1,41 @@
 "use client";
 
-import { Calendar, ChevronRight, Edit, Home, Trash, User } from "lucide-react";
+import {
+  Calendar,
+  ChevronRight,
+  Edit,
+  Home,
+  Loader2,
+  Trash,
+  User,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useFormStatus } from "react-dom";
 import ReactMarkdown from "react-markdown";
 import { deleteArticleForm } from "@/app/actions/articles";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+
+function DeleteButton() {
+  const { pending } = useFormStatus();
+  return (
+    <Button
+      type="submit"
+      variant="destructive"
+      disabled={pending}
+      className="cursor-pointer"
+    >
+      {pending ? (
+        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+      ) : (
+        <Trash className="h-4 w-4 mr-2" />
+      )}
+      {pending ? "Deleting..." : "Delete"}
+    </Button>
+  );
+}
 
 interface ViewerArticle {
   title: string;
@@ -87,16 +115,9 @@ export default function WikiArticleViewer({
             </Link>
 
             {/* Delete form calls the server action wrapper */}
-            <form action={deleteArticleForm}>
+            <form action={deleteArticleForm} className="ml-2">
               <input type="hidden" name="id" value={String(article.id)} />
-              <Button
-                type="submit"
-                variant="destructive"
-                className="ml-2 cursor-pointer"
-              >
-                <Trash className="h-4 w-4 mr-2" />
-                Delete
-              </Button>
+              <DeleteButton />
             </form>
           </div>
         )}
@@ -232,14 +253,7 @@ export default function WikiArticleViewer({
 
             <form action={deleteArticleForm}>
               <input type="hidden" name="id" value={String(article.id)} />
-              <Button
-                type="submit"
-                variant="destructive"
-                className="cursor-pointer"
-              >
-                <Trash className="h-4 w-4 mr-2" />
-                Delete
-              </Button>
+              <DeleteButton />
             </form>
           </div>
         )}

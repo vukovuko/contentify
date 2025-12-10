@@ -1,4 +1,6 @@
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
+import { WikiArticleSkeleton } from "@/components/wiki-article-skeleton";
 import WikiArticleViewer from "@/components/wiki-article-viewer";
 import { authorizeUserToEditArticle } from "@/db/authz";
 import { getArticleById } from "@/lib/data/articles";
@@ -10,14 +12,7 @@ interface ViewArticlePageProps {
   }>;
 }
 
-export default async function ViewArticlePage({
-  params,
-}: ViewArticlePageProps) {
-  const { id } = await params;
-
-  // Determine whether the currently-logged-in user can edit this article.
-  // If there's no logged-in user, `stackServerApp.getUser()` will return nullish
-  // and `canEdit` will be false.
+async function ArticleContent({ id }: { id: string }) {
   let canEdit = false;
   try {
     const user = await stackServerApp.getUser();
@@ -25,7 +20,6 @@ export default async function ViewArticlePage({
       canEdit = await authorizeUserToEditArticle(user.id, +id);
     }
   } catch (_err) {
-    // On error, default to not allowing edits. Keeps behavior safe.
     canEdit = false;
   }
 
@@ -36,4 +30,16 @@ export default async function ViewArticlePage({
   }
 
   return <WikiArticleViewer article={article} canEdit={canEdit} />;
+}
+
+export default async function ViewArticlePage({
+  params,
+}: ViewArticlePageProps) {
+  const { id } = await params;
+
+  return (
+    <Suspense fallback={<WikiArticleSkeleton />}>
+      <ArticleContent id={id} />
+    </Suspense>
+  );
 }

@@ -1,5 +1,4 @@
-export function getArticles() {
-  // TODO: Replace with actual database query
+export async function getArticles() {
   return [
     {
       id: 1,
@@ -7,7 +6,7 @@ export function getArticles() {
       content: `# Getting Started\n\nWelcome to WikiFlow — the simple wiki for students to learn modern Next.js patterns.\n\nThis article shows how to get started and includes sample Markdown content.\n\n## Features\n- Write in Markdown\n- Use React Server Actions\n- Upload images\n\nEnjoy writing!`,
       author: "Admin User",
       createdAt: "2024-01-15T10:00:00Z",
-      imageUrl: "/placeholder-image.jpg",
+      imageUrl: "/placeholder-image.svg",
     },
     {
       id: 2,
@@ -25,12 +24,12 @@ def hello() {\n  console.log('hello world');\n}\n\n
 enjoy!`,
       author: "Admin User",
       createdAt: "2024-01-17T09:15:00Z",
-      imageUrl: "/placeholder-image.jpg",
+      imageUrl: "/placeholder-image.svg",
     },
   ];
 }
 
-export function getArticleById(id: number) {
-  const articles = getArticles();
+export async function getArticleById(id: number) {
+  const articles = await getArticles();
   return articles.find((a) => +a.id === id) || null;
 }

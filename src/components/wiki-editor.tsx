@@ -1,7 +1,15 @@
 "use client";
 
-import MDEditor from "@uiw/react-md-editor";
 import { Upload, X } from "lucide-react";
+import dynamic from "next/dynamic";
+
+const MDEditor = dynamic(() => import("@uiw/react-md-editor"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-[200px] w-full animate-pulse rounded-md bg-muted" />
+  ),
+});
+
 import type React from "react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
