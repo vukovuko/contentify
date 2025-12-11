@@ -1,6 +1,6 @@
 import { FileText, PenLine } from "lucide-react";
 import Link from "next/link";
-import { Suspense } from "react";
+import { Suspense, ViewTransition } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Empty,
@@ -61,14 +61,15 @@ async function ArticleList() {
   return (
     <>
       {articles.map(({ title, id, createdAt, content, author, summary }) => (
-        <WikiCard
-          title={title}
-          author={author ? author : "Unknown"}
-          date={createdAt}
-          summary={summary || content.substring(0, 200)}
-          href={`/wiki/${id}`}
-          key={id}
-        />
+        <ViewTransition key={id} name={`article-${id}`}>
+          <WikiCard
+            title={title}
+            author={author ? author : "Unknown"}
+            date={createdAt}
+            summary={summary || content.substring(0, 200)}
+            href={`/wiki/${id}`}
+          />
+        </ViewTransition>
       ))}
     </>
   );
@@ -78,8 +79,16 @@ export default function Home() {
   return (
     <div>
       <main className="max-w-2xl mx-auto mt-6 sm:mt-10 flex flex-col gap-4 sm:gap-6 px-4">
-        <Suspense fallback={<WikiCardSkeletonGrid count={3} />}>
-          <ArticleList />
+        <Suspense
+          fallback={
+            <ViewTransition exit="slide-down">
+              <WikiCardSkeletonGrid count={3} />
+            </ViewTransition>
+          }
+        >
+          <ViewTransition enter="slide-up">
+            <ArticleList />
+          </ViewTransition>
         </Suspense>
       </main>
     </div>

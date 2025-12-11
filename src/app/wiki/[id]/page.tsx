@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
-import { WikiArticleSkeleton } from "@/components/wiki-article-skeleton";
+import { ViewTransition } from "react";
 import WikiArticleViewer from "@/components/wiki-article-viewer";
 import { authorizeUserToEditArticle } from "@/db/authz";
 import { getArticleById } from "@/lib/data/articles";
@@ -12,34 +11,27 @@ interface ViewArticlePageProps {
   }>;
 }
 
-async function ArticleContent({ id }: { id: string }) {
-  let canEdit = false;
-  try {
-    const user = await stackServerApp.getUser();
-    if (user) {
-      canEdit = await authorizeUserToEditArticle(user.id, +id);
-    }
-  } catch (_err) {
-    canEdit = false;
-  }
-
-  const article = await getArticleById(+id);
-
-  if (!article) {
-    notFound();
-  }
-
-  return <WikiArticleViewer article={article} canEdit={canEdit} />;
-}
-
 export default async function ViewArticlePage({
   params,
 }: ViewArticlePageProps) {
   const { id } = await params;
 
+  const [article, user] = await Promise.all([
+    getArticleById(+id),
+    stackServerApp.getUser().catch(() => null),
+  ]);
+
+  if (!article) {
+    notFound();
+  }
+
+  const canEdit = user
+    ? await authorizeUserToEditArticle(user.id, +id).catch(() => false)
+    : false;
+
   return (
-    <Suspense fallback={<WikiArticleSkeleton />}>
-      <ArticleContent id={id} />
-    </Suspense>
+    <ViewTransition name={`article-${id}`} enter="expand">
+      <WikiArticleViewer article={article} canEdit={canEdit} />
+    </ViewTransition>
   );
 }

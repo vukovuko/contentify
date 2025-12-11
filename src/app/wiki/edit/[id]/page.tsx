@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { ViewTransition } from "react";
 import WikiEditor from "@/components/wiki-editor";
 import { getArticleById } from "@/lib/data/articles";
 import { stackServerApp } from "@/stack/server";
@@ -23,7 +24,11 @@ export default async function EditArticlePage({
   // In a real app, you would fetch the article data here
   // For now, we'll just show some mock data if it's not "new"
   if (id === "new") {
-    return <WikiEditor isEditing={true} articleId={id} />;
+    return (
+      <ViewTransition enter="slide-up">
+        <WikiEditor isEditing={true} articleId={id} />
+      </ViewTransition>
+    );
   }
 
   const article = await getArticleById(+id);
@@ -31,11 +36,13 @@ export default async function EditArticlePage({
     notFound();
   }
   return (
-    <WikiEditor
-      initialTitle={article.title}
-      initialContent={article.content}
-      isEditing={true}
-      articleId={id}
-    />
+    <ViewTransition enter="slide-up">
+      <WikiEditor
+        initialTitle={article.title}
+        initialContent={article.content}
+        isEditing={true}
+        articleId={id}
+      />
+    </ViewTransition>
   );
 }
