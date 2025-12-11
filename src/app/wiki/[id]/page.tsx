@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ViewTransition } from "react";
 import WikiArticleViewer from "@/components/wiki-article-viewer";
@@ -9,6 +10,28 @@ interface ViewArticlePageProps {
   params: Promise<{
     id: string;
   }>;
+}
+
+export async function generateMetadata({
+  params,
+}: ViewArticlePageProps): Promise<Metadata> {
+  const { id } = await params;
+  const article = await getArticleById(+id);
+
+  if (!article) {
+    return { title: "Article Not Found" };
+  }
+
+  return {
+    title: article.title,
+    description: article.content.substring(0, 160),
+    openGraph: {
+      title: article.title,
+      description: article.content.substring(0, 160),
+      type: "article",
+      ...(article.imageUrl && { images: [{ url: article.imageUrl }] }),
+    },
+  };
 }
 
 export default async function ViewArticlePage({

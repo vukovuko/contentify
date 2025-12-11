@@ -17,8 +17,41 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Wikimasters",
-  description: "Learn how to build and scale Next.js apps with Brian Holt",
+  title: {
+    default: "WikiMasters",
+    template: "%s | WikiMasters",
+  },
+  description:
+    "A modern wiki platform for sharing knowledge. Create, edit, and share articles with your community.",
+  keywords: ["wiki", "knowledge base", "articles", "documentation", "markdown"],
+  authors: [{ name: "WikiMasters" }],
+  creator: "WikiMasters",
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+  ),
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    siteName: "WikiMasters",
+    title: "WikiMasters",
+    description:
+      "A modern wiki platform for sharing knowledge. Create, edit, and share articles with your community.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "WikiMasters",
+    description:
+      "A modern wiki platform for sharing knowledge. Create, edit, and share articles with your community.",
+  },
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
+  },
+  manifest: "/site.webmanifest",
 };
 
 export default function RootLayout({
