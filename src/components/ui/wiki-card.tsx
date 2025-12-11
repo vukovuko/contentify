@@ -31,7 +31,9 @@ export function WikiCard({
           <span>•</span>
           <span>{date}</span>
         </div>
-        <CardTitle className="text-base sm:text-lg line-clamp-2">{title}</CardTitle>
+        <CardTitle className="text-base sm:text-lg line-clamp-2">
+          {title}
+        </CardTitle>
       </CardHeader>
       <CardContent className="py-0 px-4 sm:px-6">
         <CardDescription className="line-clamp-3">{summary}</CardDescription>

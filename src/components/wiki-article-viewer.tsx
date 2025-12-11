@@ -288,12 +288,17 @@ export default function WikiArticleViewer({
       {/* Footer Actions */}
       <div className="mt-8 flex flex-col sm:flex-row gap-4 sm:justify-between sm:items-center">
         <Link href="/">
-          <Button variant="outline" className="w-full sm:w-auto">← Back to Articles</Button>
+          <Button variant="outline" className="w-full sm:w-auto">
+            ← Back to Articles
+          </Button>
         </Link>
 
         {canEdit && (
           <div className="flex flex-wrap gap-2">
-            <Link href={`/wiki/edit/${article.id}`} className="cursor-pointer flex-1 sm:flex-none">
+            <Link
+              href={`/wiki/edit/${article.id}`}
+              className="cursor-pointer flex-1 sm:flex-none"
+            >
               <Button className="cursor-pointer w-full sm:w-auto">
                 <Edit className="h-4 w-4 mr-2" />
                 Edit

@@ -11,7 +11,7 @@ const BASE_URL = process.env.VERCEL_URL
 
 export default async function sendCelebrationEmail(
   articleId: number,
-  pageviews: number
+  pageviews: number,
 ) {
   const response = await db
     .select({
@@ -30,7 +30,7 @@ export default async function sendCelebrationEmail(
   }
 
   const emailRes = await resend.emails.send({
-    from: "Wikimasters <noreply@mail.holt.courses>", // replace with your domain when ready
+    from: "Wikimasters <onboarding@resend.dev>",
     to: email,
     subject: `✨ Your article got ${pageviews} views! ✨`,
     react: (
@@ -47,7 +47,7 @@ export default async function sendCelebrationEmail(
   } else {
     console.error(
       `❌ error sending ${id} a celebration for getting ${pageviews} on article ${articleId}`,
-      emailRes.error
+      emailRes.error,
     );
   }
 }
