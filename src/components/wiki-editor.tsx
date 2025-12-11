@@ -15,7 +15,7 @@ const MDEditor = dynamic(() => import("@uiw/react-md-editor"), {
 });
 
 import type React from "react";
-import { useState } from "react";
+import { startTransition, useState } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -117,7 +117,9 @@ export default function WikiEditor({
         toast.success("Article Updated", {
           description: "Your article has been updated successfully.",
         });
-        router.push(`/wiki/${articleId}`);
+        startTransition(() => {
+          router.push(`/wiki/${articleId}`);
+        });
       } else {
         const result = await createArticle({
           title: title.trim(),
@@ -128,9 +130,13 @@ export default function WikiEditor({
           description: "Your article has been created successfully.",
         });
         if (result.id) {
-          router.push(`/wiki/${result.id}`);
+          startTransition(() => {
+            router.push(`/wiki/${result.id}`);
+          });
         } else {
-          router.push("/");
+          startTransition(() => {
+            router.push("/");
+          });
         }
       }
     } catch (error) {
@@ -306,7 +312,13 @@ export default function WikiEditor({
                     <AlertDialogCancel>Keep editing</AlertDialogCancel>
                     <AlertDialogAction
                       onClick={() => {
-                        window.history.back();
+                        startTransition(() => {
+                          if (isEditing && articleId && articleId !== "new") {
+                            router.push(`/wiki/${articleId}`);
+                          } else {
+                            router.push("/");
+                          }
+                        });
                       }}
                     >
                       Discard

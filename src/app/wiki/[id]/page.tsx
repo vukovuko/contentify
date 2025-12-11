@@ -53,7 +53,7 @@ export default async function ViewArticlePage({
     : false;
 
   return (
-    <ViewTransition name={`article-${id}`} enter="expand">
+    <ViewTransition name={`article-${id}`} enter="slide-up">
       <WikiArticleViewer article={article} canEdit={canEdit} />
     </ViewTransition>
   );

@@ -25,7 +25,7 @@ export default async function EditArticlePage({
   // For now, we'll just show some mock data if it's not "new"
   if (id === "new") {
     return (
-      <ViewTransition enter="slide-up">
+      <ViewTransition enter="slide-up" exit="slide-down">
         <WikiEditor isEditing={true} articleId={id} />
       </ViewTransition>
     );
@@ -36,7 +36,7 @@ export default async function EditArticlePage({
     notFound();
   }
   return (
-    <ViewTransition enter="slide-up">
+    <ViewTransition enter="slide-up" exit="slide-down">
       <WikiEditor
         initialTitle={article.title}
         initialContent={article.content}

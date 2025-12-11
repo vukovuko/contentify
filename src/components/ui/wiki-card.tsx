@@ -1,4 +1,7 @@
-import Link from "next/link";
+"use client";
+
+import { useRouter } from "next/navigation";
+import { startTransition } from "react";
 import {
   Card,
   CardContent,
@@ -25,8 +28,23 @@ export function WikiCard({
   href,
   onClick,
 }: WikiCardProps) {
+  const router = useRouter();
+
+  const handleClick = () => {
+    if (onClick) {
+      onClick();
+    } else if (href) {
+      startTransition(() => {
+        router.push(href);
+      });
+    }
+  };
+
   return (
-    <Card className={onClick ? "cursor-pointer" : undefined} onClick={onClick}>
+    <Card
+      className={onClick || href ? "cursor-pointer" : undefined}
+      onClick={handleClick}
+    >
       <CardHeader className="pb-2 p-4 sm:p-6 sm:pb-2">
         <div className="flex flex-wrap items-center gap-1 sm:gap-2 text-xs text-muted-foreground">
           <span className="truncate max-w-[120px] sm:max-w-none">{author}</span>
@@ -41,18 +59,11 @@ export function WikiCard({
         <CardDescription className="line-clamp-3">{summary}</CardDescription>
       </CardContent>
       <CardFooter className="pt-2 p-4 sm:p-6 sm:pt-2">
-        {onClick ? (
+        {(onClick || href) && (
           <span className="text-blue-600 text-sm font-medium">
             Read article →
           </span>
-        ) : href ? (
-          <Link
-            href={href}
-            className="text-blue-600 hover:underline text-sm font-medium w-fit"
-          >
-            Read article →
-          </Link>
-        ) : null}
+        )}
       </CardFooter>
     </Card>
   );

@@ -86,7 +86,7 @@ export default function Home() {
             </ViewTransition>
           }
         >
-          <ViewTransition enter="slide-up">
+          <ViewTransition enter="slide-up" exit="slide-down" default="none">
             <ArticleList />
           </ViewTransition>
         </Suspense>

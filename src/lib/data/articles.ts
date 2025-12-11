@@ -1,5 +1,6 @@
 import { desc, eq } from "drizzle-orm";
 import { usersSync } from "drizzle-orm/neon";
+import { cache } from "react";
 import redis from "@/cache";
 import db from "@/db/index";
 import { articles } from "@/db/schema";
@@ -26,7 +27,7 @@ export type ArticleList = {
   imageUrl?: string | null;
 };
 
-export async function getArticles(): Promise<ArticleList[]> {
+export const getArticles = cache(async (): Promise<ArticleList[]> => {
   const cached = await redis.get<ArticleList[]>("articles:all");
   if (cached) {
     return cached;
@@ -60,7 +61,7 @@ export async function getArticles(): Promise<ArticleList[]> {
     console.warn("Failed to set articles cache", err);
   }
   return formatted as ArticleList[];
-}
+});
 
 export type ArticleWithAuthor = {
   id: number;

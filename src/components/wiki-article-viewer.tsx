@@ -11,11 +11,11 @@ import {
   User,
 } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
-import { useEffect, useState } from "react";
-import { useFormStatus } from "react-dom";
+import { useRouter } from "next/navigation";
+import { startTransition, useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
-import { deleteArticleForm } from "@/app/actions/articles";
+import { toast } from "sonner";
+import { deleteArticle } from "@/app/actions/articles";
 import { incrementPageview } from "@/app/actions/pageviews";
 import {
   AlertDialog,
@@ -31,30 +31,37 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
-function DeleteButton() {
-  const { pending } = useFormStatus();
-  return (
-    <Button
-      type="submit"
-      variant="destructive"
-      disabled={pending}
-      className="cursor-pointer"
-    >
-      {pending ? (
-        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-      ) : (
-        <Trash className="h-4 w-4 mr-2" />
-      )}
-      {pending ? "Deleting..." : "Delete"}
-    </Button>
-  );
-}
-
 function DeleteWithConfirmation({ articleId }: { articleId: number }) {
+  const router = useRouter();
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    try {
+      await deleteArticle(String(articleId));
+      toast.success("Article Deleted", {
+        description: "The article has been deleted successfully.",
+      });
+      startTransition(() => {
+        router.push("/");
+      });
+    } catch (error) {
+      console.error("Delete error:", error);
+      toast.error("Error", {
+        description: "Failed to delete the article. Please try again.",
+      });
+      setIsDeleting(false);
+    }
+  };
+
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="destructive" className="cursor-pointer">
+        <Button
+          variant="destructive"
+          className="cursor-pointer"
+          disabled={isDeleting}
+        >
           <Trash className="h-4 w-4 mr-2" />
           Delete
         </Button>
@@ -68,11 +75,24 @@ function DeleteWithConfirmation({ articleId }: { articleId: number }) {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <form action={deleteArticleForm}>
-            <input type="hidden" name="id" value={String(articleId)} />
-            <DeleteButton />
-          </form>
+          <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+          <Button
+            variant="destructive"
+            onClick={handleDelete}
+            disabled={isDeleting}
+          >
+            {isDeleting ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Deleting...
+              </>
+            ) : (
+              <>
+                <Trash className="h-4 w-4 mr-2" />
+                Delete
+              </>
+            )}
+          </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
@@ -100,6 +120,7 @@ export default function WikiArticleViewer({
   canEdit = false,
   closeAction,
 }: WikiArticleViewerProps) {
+  const router = useRouter();
   const [localPageviews, setLocalPageviews] = useState<number | null>(null);
 
   useEffect(() => {
@@ -134,13 +155,18 @@ export default function WikiArticleViewer({
             Home
           </button>
         ) : (
-          <Link
-            href="/"
+          <button
+            type="button"
+            onClick={() => {
+              startTransition(() => {
+                router.push("/");
+              });
+            }}
             className="flex items-center hover:text-foreground transition-colors"
           >
             <Home className="h-4 w-4 mr-1" />
             Home
-          </Link>
+          </button>
         )}
         <ChevronRight className="h-4 w-4" />
         <span className="text-foreground font-medium">{article.title}</span>
@@ -174,12 +200,19 @@ export default function WikiArticleViewer({
         {/* Edit Button - Only shown if user has edit permissions */}
         {canEdit && (
           <div className="flex flex-wrap gap-2">
-            <Link href={`/wiki/edit/${article.id}`} className="cursor-pointer">
-              <Button variant="outline" size="sm" className="cursor-pointer">
-                <Edit className="h-4 w-4 mr-2" />
-                Edit
-              </Button>
-            </Link>
+            <Button
+              variant="outline"
+              size="sm"
+              className="cursor-pointer"
+              onClick={() => {
+                startTransition(() => {
+                  router.push(`/wiki/edit/${article.id}`);
+                });
+              }}
+            >
+              <Edit className="h-4 w-4 mr-2" />
+              Edit
+            </Button>
             <DeleteWithConfirmation articleId={article.id} />
           </div>
         )}
@@ -309,24 +342,32 @@ export default function WikiArticleViewer({
             ← Back to Articles
           </Button>
         ) : (
-          <Link href="/">
-            <Button variant="outline" className="w-full sm:w-auto">
-              ← Back to Articles
-            </Button>
-          </Link>
+          <Button
+            variant="outline"
+            className="w-full sm:w-auto"
+            onClick={() => {
+              startTransition(() => {
+                router.push("/");
+              });
+            }}
+          >
+            ← Back to Articles
+          </Button>
         )}
 
         {canEdit && (
           <div className="flex flex-wrap gap-2">
-            <Link
-              href={`/wiki/edit/${article.id}`}
-              className="cursor-pointer flex-1 sm:flex-none"
+            <Button
+              className="cursor-pointer w-full sm:w-auto"
+              onClick={() => {
+                startTransition(() => {
+                  router.push(`/wiki/edit/${article.id}`);
+                });
+              }}
             >
-              <Button className="cursor-pointer w-full sm:w-auto">
-                <Edit className="h-4 w-4 mr-2" />
-                Edit
-              </Button>
-            </Link>
+              <Edit className="h-4 w-4 mr-2" />
+              Edit
+            </Button>
             <DeleteWithConfirmation articleId={article.id} />
           </div>
         )}

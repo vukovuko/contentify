@@ -5,7 +5,7 @@ import { stackServerApp } from "@/stack/server";
 export default async function NewArticlePage() {
   await stackServerApp.getUser({ or: "redirect" });
   return (
-    <ViewTransition enter="slide-up">
+    <ViewTransition enter="slide-up" exit="slide-down">
       <WikiEditor isEditing={false} />
     </ViewTransition>
   );
