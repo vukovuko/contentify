@@ -92,11 +92,13 @@ interface WikiArticleViewerProps {
   article: ViewerArticle;
   canEdit?: boolean;
   pageviews?: number | null;
+  closeAction?: () => void;
 }
 
 export default function WikiArticleViewer({
   article,
   canEdit = false,
+  closeAction,
 }: WikiArticleViewerProps) {
   const [localPageviews, setLocalPageviews] = useState<number | null>(null);
 
@@ -122,13 +124,24 @@ export default function WikiArticleViewer({
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       {/* Breadcrumb Navigation */}
       <nav className="flex items-center space-x-2 text-sm text-muted-foreground mb-6">
-        <Link
-          href="/"
-          className="flex items-center hover:text-foreground transition-colors"
-        >
-          <Home className="h-4 w-4 mr-1" />
-          Home
-        </Link>
+        {closeAction ? (
+          <button
+            type="button"
+            onClick={closeAction}
+            className="flex items-center hover:text-foreground transition-colors"
+          >
+            <Home className="h-4 w-4 mr-1" />
+            Home
+          </button>
+        ) : (
+          <Link
+            href="/"
+            className="flex items-center hover:text-foreground transition-colors"
+          >
+            <Home className="h-4 w-4 mr-1" />
+            Home
+          </Link>
+        )}
         <ChevronRight className="h-4 w-4" />
         <span className="text-foreground font-medium">{article.title}</span>
       </nav>
@@ -287,11 +300,21 @@ export default function WikiArticleViewer({
 
       {/* Footer Actions */}
       <div className="mt-8 flex flex-col sm:flex-row gap-4 sm:justify-between sm:items-center">
-        <Link href="/">
-          <Button variant="outline" className="w-full sm:w-auto">
+        {closeAction ? (
+          <Button
+            variant="outline"
+            className="w-full sm:w-auto"
+            onClick={closeAction}
+          >
             ← Back to Articles
           </Button>
-        </Link>
+        ) : (
+          <Link href="/">
+            <Button variant="outline" className="w-full sm:w-auto">
+              ← Back to Articles
+            </Button>
+          </Link>
+        )}
 
         {canEdit && (
           <div className="flex flex-wrap gap-2">

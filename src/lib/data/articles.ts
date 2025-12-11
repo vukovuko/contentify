@@ -22,6 +22,7 @@ export type ArticleList = {
   summary: string | null;
   content: string;
   author: string | null;
+  authorId: string | null;
   imageUrl?: string | null;
 };
 
@@ -39,6 +40,7 @@ export async function getArticles(): Promise<ArticleList[]> {
       summary: articles.summary,
       content: articles.content,
       author: usersSync.name,
+      authorId: articles.authorId,
     })
     .from(articles)
     .leftJoin(usersSync, eq(articles.authorId, usersSync.id))
