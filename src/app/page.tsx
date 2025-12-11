@@ -77,7 +77,7 @@ async function ArticleList() {
 export default function Home() {
   return (
     <div>
-      <main className="max-w-2xl mx-auto mt-10 flex flex-col gap-6 px-4">
+      <main className="max-w-2xl mx-auto mt-6 sm:mt-10 flex flex-col gap-4 sm:gap-6 px-4">
         <Suspense fallback={<WikiCardSkeletonGrid count={3} />}>
           <ArticleList />
         </Suspense>

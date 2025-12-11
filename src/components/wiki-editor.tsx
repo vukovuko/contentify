@@ -146,17 +146,17 @@ export default function WikiEditor({
   const pageTitle = isEditing ? "Edit Article" : "Create New Article";
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">{pageTitle}</h1>
+    <div className="container mx-auto px-4 py-6 sm:py-8 max-w-4xl">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold">{pageTitle}</h1>
         {isEditing && articleId && (
-          <p className="text-muted-foreground mt-2">
+          <p className="text-muted-foreground mt-2 text-sm sm:text-base">
             Editing article ID: {articleId}
           </p>
         )}
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
         {/* Title Section */}
         <Card>
           <CardHeader>
@@ -282,18 +282,19 @@ export default function WikiEditor({
         {/* Action Buttons */}
         <Card>
           <CardContent className="pt-6">
-            <div className="flex justify-end space-x-4">
+            <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 sm:gap-4">
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button
                     type="button"
                     variant="outline"
                     disabled={isSubmitting}
+                    className="w-full sm:w-auto"
                   >
                     Cancel
                   </Button>
                 </AlertDialogTrigger>
-                <AlertDialogContent>
+                <AlertDialogContent className="mx-4 sm:mx-0">
                   <AlertDialogHeader>
                     <AlertDialogTitle>Discard changes?</AlertDialogTitle>
                     <AlertDialogDescription>
@@ -305,7 +306,6 @@ export default function WikiEditor({
                     <AlertDialogCancel>Keep editing</AlertDialogCancel>
                     <AlertDialogAction
                       onClick={() => {
-                        // Navigation logic would go here
                         window.history.back();
                       }}
                     >
@@ -317,7 +317,7 @@ export default function WikiEditor({
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="min-w-[100px]"
+                className="w-full sm:w-auto sm:min-w-[100px]"
               >
                 {isSubmitting ? "Saving..." : "Save Article"}
               </Button>

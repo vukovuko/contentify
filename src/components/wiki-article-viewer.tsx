@@ -134,44 +134,39 @@ export default function WikiArticleViewer({
       </nav>
 
       {/* Article Header */}
-      <div className="flex justify-between items-start mb-6">
-        <div className="flex-1">
-          <h1 className="text-4xl font-bold text-foreground mb-4">
-            {article.title}
-          </h1>
+      <div className="mb-6">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-4">
+          {article.title}
+        </h1>
 
-          {/* Article Metadata */}
-          <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-            <div className="flex items-center">
-              <User className="h-4 w-4 mr-1" />
-              <span>By {article.author ?? "Unknown"}</span>
-            </div>
-            <div className="flex items-center">
-              <Calendar className="h-4 w-4 mr-1" />
-              <span>{formatDate(article.createdAt)}</span>
-            </div>
-            <div className="flex items-center">
-              <Badge variant="secondary">Article</Badge>
-            </div>
-            <div className="flex items-center text-sm text-muted-foreground">
-              <Eye className="h-4 w-4 mr-1" />
-              <span>{localPageviews ? localPageviews : "—"}</span>
-              <span className="ml-1">views</span>
-            </div>
+        {/* Article Metadata */}
+        <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground mb-4">
+          <div className="flex items-center">
+            <User className="h-4 w-4 mr-1" />
+            <span>By {article.author ?? "Unknown"}</span>
+          </div>
+          <div className="flex items-center">
+            <Calendar className="h-4 w-4 mr-1" />
+            <span>{formatDate(article.createdAt)}</span>
+          </div>
+          <div className="flex items-center">
+            <Badge variant="secondary">Article</Badge>
+          </div>
+          <div className="flex items-center">
+            <Eye className="h-4 w-4 mr-1" />
+            <span>{localPageviews ? localPageviews : "—"} views</span>
           </div>
         </div>
 
         {/* Edit Button - Only shown if user has edit permissions */}
         {canEdit && (
-          <div className="ml-4 flex items-center gap-2">
+          <div className="flex flex-wrap gap-2">
             <Link href={`/wiki/edit/${article.id}`} className="cursor-pointer">
-              <Button variant="outline" className="cursor-pointer">
+              <Button variant="outline" size="sm" className="cursor-pointer">
                 <Edit className="h-4 w-4 mr-2" />
-                Edit Article
+                Edit
               </Button>
             </Link>
-
-            {/* Delete with confirmation dialog */}
             <DeleteWithConfirmation articleId={article.id} />
           </div>
         )}
@@ -291,20 +286,19 @@ export default function WikiArticleViewer({
       </Card>
 
       {/* Footer Actions */}
-      <div className="mt-8 flex justify-between items-center">
+      <div className="mt-8 flex flex-col sm:flex-row gap-4 sm:justify-between sm:items-center">
         <Link href="/">
-          <Button variant="outline">← Back to Articles</Button>
+          <Button variant="outline" className="w-full sm:w-auto">← Back to Articles</Button>
         </Link>
 
         {canEdit && (
-          <div className="flex items-center gap-2">
-            <Link href={`/wiki/edit/${article.id}`} className="cursor-pointer">
-              <Button className="cursor-pointer">
+          <div className="flex flex-wrap gap-2">
+            <Link href={`/wiki/edit/${article.id}`} className="cursor-pointer flex-1 sm:flex-none">
+              <Button className="cursor-pointer w-full sm:w-auto">
                 <Edit className="h-4 w-4 mr-2" />
-                Edit This Article
+                Edit
               </Button>
             </Link>
-
             <DeleteWithConfirmation articleId={article.id} />
           </div>
         )}
