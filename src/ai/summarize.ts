@@ -10,7 +10,7 @@ function isTestEnv() {
 
 export async function summarizeArticle(
   title: string,
-  article: string
+  article: string,
 ): Promise<string> {
   if (isTestEnv()) {
     return "This is a test summary.";
