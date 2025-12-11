@@ -1,19 +1,23 @@
-import { desc, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { usersSync } from "drizzle-orm/neon";
 import redis from "@/cache";
 import db from "@/db/index";
 import { articles } from "@/db/schema";
 
-type ArticleListItem = {
-  title: string;
+// The list view selects only a subset of Article fields and adds the author's
+// resolved name. Use a dedicated type for the list response.
+export type ArticleList = {
   id: number;
+  title: string;
   createdAt: string;
+  summary: string | null;
   content: string;
   author: string | null;
+  imageUrl?: string | null;
 };
 
-export async function getArticles() {
-  const cached = await redis.get<ArticleListItem[]>("articles:all");
+export async function getArticles(): Promise<ArticleList[]> {
+  const cached = await redis.get<ArticleList[]>("articles:all");
   if (cached) {
     return cached;
   }
@@ -23,19 +27,32 @@ export async function getArticles() {
       title: articles.title,
       id: articles.id,
       createdAt: articles.createdAt,
+      summary: articles.summary,
       content: articles.content,
       author: usersSync.name,
     })
     .from(articles)
-    .leftJoin(usersSync, eq(articles.authorId, usersSync.id))
-    .orderBy(desc(articles.updatedAt));
+    .leftJoin(usersSync, eq(articles.authorId, usersSync.id));
 
-  redis.set("articles:all", response, {
-    ex: 60,
-  });
-
-  return response;
+  // Store cache as JSON so we can retrieve a typed array later
+  try {
+    await redis.set("articles:all", JSON.stringify(response), {
+      ex: 60,
+    });
+  } catch (err) {
+    console.warn("Failed to set articles cache", err);
+  }
+  return response as unknown as ArticleList[];
 }
+
+export type ArticleWithAuthor = {
+  id: number;
+  title: string;
+  content: string;
+  createdAt: string;
+  imageUrl?: string | null;
+  author: string | null;
+};
 
 export async function getArticleById(id: number) {
   const response = await db
@@ -50,5 +67,6 @@ export async function getArticleById(id: number) {
     .from(articles)
     .where(eq(articles.id, id))
     .leftJoin(usersSync, eq(articles.authorId, usersSync.id));
-  return response[0] ? response[0] : null;
+  // Cast the DB response to the shape we selected above.
+  return response[0] ? (response[0] as unknown as ArticleWithAuthor) : null;
 }

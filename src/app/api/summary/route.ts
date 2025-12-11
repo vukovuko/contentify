@@ -28,7 +28,6 @@ export async function GET(req: NextRequest) {
   }
 
   let updated = 0;
-  console.log("🤖 Starting AI summary job");
 
   for (const row of rows) {
     try {
@@ -62,6 +61,5 @@ export async function GET(req: NextRequest) {
     console.warn("⚠️ Failed to clear articles cache", e);
   }
 
-  console.log(`🤖 Concluding AI summary job, updated ${updated} rows`);
   return NextResponse.json({ ok: true, updated });
 }

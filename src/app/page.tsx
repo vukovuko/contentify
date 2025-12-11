@@ -60,12 +60,12 @@ async function ArticleList() {
 
   return (
     <>
-      {articles.map(({ title, id, createdAt, content, author }) => (
+      {articles.map(({ title, id, createdAt, content, author, summary }) => (
         <WikiCard
           title={title}
           author={author ? author : "Unknown"}
           date={createdAt}
-          summary={content.substring(0, 200)}
+          summary={summary || content.substring(0, 200)}
           href={`/wiki/${id}`}
           key={id}
         />
