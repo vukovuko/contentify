@@ -1,6 +1,7 @@
 import { StackProvider, StackTheme } from "@stackframe/stack";
 import type { Metadata } from "next";
 import { JetBrains_Mono, Manrope } from "next/font/google";
+import { Suspense } from "react";
 import { stackClientApp } from "../stack/client";
 import "./globals.css";
 import NavBar from "@/components/nav/nav-bar";
@@ -66,8 +67,10 @@ export default function RootLayout({
       >
         <StackProvider app={stackClientApp}>
           <StackTheme>
-            <NavBar />
-            {children}
+            <Suspense>
+              <NavBar />
+              {children}
+            </Suspense>
             <Toaster />
           </StackTheme>
         </StackProvider>
