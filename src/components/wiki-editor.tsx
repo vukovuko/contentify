@@ -134,9 +134,9 @@ export default function WikiEditor({
         }
       }
     } catch (error) {
+      console.error("Article save error:", error);
       toast.error("Error", {
-        description:
-          error instanceof Error ? error.message : "Something went wrong",
+        description: "Something went wrong. Please try again.",
       });
     } finally {
       setIsSubmitting(false);

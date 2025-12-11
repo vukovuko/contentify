@@ -1,8 +1,17 @@
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { usersSync } from "drizzle-orm/neon";
 import redis from "@/cache";
 import db from "@/db/index";
 import { articles } from "@/db/schema";
+
+function formatDate(dateString: string): string {
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
 
 // The list view selects only a subset of Article fields and adds the author's
 // resolved name. Use a dedicated type for the list response.
@@ -32,17 +41,23 @@ export async function getArticles(): Promise<ArticleList[]> {
       author: usersSync.name,
     })
     .from(articles)
-    .leftJoin(usersSync, eq(articles.authorId, usersSync.id));
+    .leftJoin(usersSync, eq(articles.authorId, usersSync.id))
+    .orderBy(desc(articles.updatedAt));
+
+  const formatted = response.map((article) => ({
+    ...article,
+    createdAt: formatDate(article.createdAt),
+  }));
 
   // Store cache as JSON so we can retrieve a typed array later
   try {
-    await redis.set("articles:all", JSON.stringify(response), {
+    await redis.set("articles:all", JSON.stringify(formatted), {
       ex: 60,
     });
   } catch (err) {
     console.warn("Failed to set articles cache", err);
   }
-  return response as unknown as ArticleList[];
+  return formatted as ArticleList[];
 }
 
 export type ArticleWithAuthor = {
@@ -67,6 +82,11 @@ export async function getArticleById(id: number) {
     .from(articles)
     .where(eq(articles.id, id))
     .leftJoin(usersSync, eq(articles.authorId, usersSync.id));
-  // Cast the DB response to the shape we selected above.
-  return response[0] ? (response[0] as unknown as ArticleWithAuthor) : null;
+
+  if (!response[0]) return null;
+
+  return {
+    ...response[0],
+    createdAt: formatDate(response[0].createdAt),
+  } as ArticleWithAuthor;
 }

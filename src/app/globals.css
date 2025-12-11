@@ -155,3 +155,21 @@
   background-color: var(--accent) !important;
   color: var(--accent-foreground) !important;
 }
+
+/* Make MDEditor textarea fill full height */
+.w-md-editor-content {
+  height: 100% !important;
+}
+
+.w-md-editor-area {
+  height: 100% !important;
+}
+
+.w-md-editor-text {
+  min-height: 100% !important;
+}
+
+.w-md-editor-text-textarea {
+  min-height: 100% !important;
+  height: 100% !important;
+}
