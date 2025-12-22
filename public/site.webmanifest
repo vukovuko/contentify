@@ -1,6 +1,6 @@
 {
-  "name": "WikiMasters",
-  "short_name": "WikiMasters",
+  "name": "Contentify",
+  "short_name": "Contentify",
   "description": "A modern wiki platform for sharing knowledge",
   "start_url": "/",
   "display": "standalone",

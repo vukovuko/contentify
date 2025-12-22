@@ -19,28 +19,28 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "WikiMasters",
-    template: "%s | WikiMasters",
+    default: "Contentify",
+    template: "%s | Contentify",
   },
   description:
     "A modern wiki platform for sharing knowledge. Create, edit, and share articles with your community.",
   keywords: ["wiki", "knowledge base", "articles", "documentation", "markdown"],
-  authors: [{ name: "WikiMasters" }],
-  creator: "WikiMasters",
+  authors: [{ name: "Contentify" }],
+  creator: "Contentify",
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+    process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
   ),
   openGraph: {
     type: "website",
     locale: "en_US",
-    siteName: "WikiMasters",
-    title: "WikiMasters",
+    siteName: "Contentify",
+    title: "Contentify",
     description:
       "A modern wiki platform for sharing knowledge. Create, edit, and share articles with your community.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "WikiMasters",
+    title: "Contentify",
     description:
       "A modern wiki platform for sharing knowledge. Create, edit, and share articles with your community.",
   },

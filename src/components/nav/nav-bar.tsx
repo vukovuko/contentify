@@ -19,7 +19,7 @@ export default async function NavBar() {
             href="/"
             className="font-bold text-xl tracking-tight text-gray-900"
           >
-            Wikimasters
+            Contentify
           </Link>
         </div>
         <NavigationMenu>

@@ -34,7 +34,7 @@ const CelebrationTemplate = ({
             <td style={{ paddingBottom: 12 }}>
               <div style={{ textAlign: "left" }}>
                 <strong style={{ fontSize: 18, color: "#0f172a" }}>
-                  Wikimasters
+                  Contentify
                 </strong>
               </div>
             </td>
@@ -85,7 +85,7 @@ const CelebrationTemplate = ({
 
                 <p style={{ marginTop: 18, color: "#94a3b8", fontSize: 13 }}>
                   Keep writing — you&apos;re helping other people learn. — The
-                  Wikimasters team
+                  Contentify team
                 </p>
               </div>
             </td>
@@ -95,7 +95,7 @@ const CelebrationTemplate = ({
             <td style={{ paddingTop: 14 }}>
               <p style={{ margin: 0, color: "#94a3b8", fontSize: 12 }}>
                 You’re receiving this email because you authored content on
-                Wikimasters.
+                Contentify.
               </p>
             </td>
           </tr>

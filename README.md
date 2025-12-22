@@ -1,4 +1,4 @@
-# WikiMasters
+# Contentify
 
 A modern, full-stack wiki application built with Next.js 16 and React 19. Create, edit, and share knowledge with your community.
 
